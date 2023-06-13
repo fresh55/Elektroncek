@@ -41,6 +41,18 @@ import {
 import { cn } from "@/lib/utils"
 import {  useState, useEffect  } from "react"
 import { getCities } from "@/lib/other"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+
 
 
 const UpdateUserForm = (user:any) => {
@@ -48,9 +60,9 @@ const UpdateUserForm = (user:any) => {
    
     const router = useRouter();
     const [isLoading,setIsLoading] = useState(false);
+    const [isLoading1,setIsLoading1] = useState(false);
     const [cities, setCities] = useState([]);
-    const [open, setOpen] = React.useState(false)
-    const [value, setValue] = React.useState("")
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
       const fetchData = async () => {
@@ -64,12 +76,34 @@ const UpdateUserForm = (user:any) => {
   
       fetchData();
     }, []);
+
+    const FormSchema = z.object({
+      mesto: z.string({
+        required_error: "Please select a mesto.",
+      }),
+    })
     
     const {handleSubmit,register,formState:{errors},
 } = useForm<FieldValues>()
 
+const form = useForm<z.infer<typeof FormSchema>>({
+  resolver: zodResolver(FormSchema),
+})
+
 const onSubmit: SubmitHandler<FieldValues> = async(data) => {
     setIsLoading(true);}
+    
+    function onSubmit1(data: z.infer<typeof FormSchema>) {
+      toast({
+        title: "You submitted the following values:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          </pre>
+        ),
+      })
+    }
+
 return(
   <>
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -157,13 +191,15 @@ return(
         
       </Card>
     </form>
+    
+   
+    
     <Card>
     <CardHeader>
       <CardTitle>Podatki za objavo oglasa</CardTitle>
       <CardDescription>Spremenite podatke o vas</CardDescription>
     </CardHeader>
     <CardContent>
-      
     <div className="flex gap-8 mb-3">
       <div >
           <Label htmlFor="Ime">
@@ -195,61 +231,93 @@ return(
               <p className="px-1 text-xs text-red-600">napaka</p>
             )}
             </div>
+            
              
           </div>
-          <Popover>
+          <Label htmlFor="Ime">
+              Mesto
+            </Label>
+            <Form  {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit1)} className="space-y-6 mb-3">
+      <FormField
+          control={form.control}
+          name="mesto"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <Popover open={isOpen} onOpenChange={setIsOpen} >
                 <PopoverTrigger asChild>
-                  
+                  <FormControl>
                     <Button
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-[200px] justify-between"
+                        "w-[400px] justify-between font-normal",
+                        !field.value && "text-muted-foreground"
                       )}
                     >
-                      {value
-                        ? cities.find(
-                            (language) => language === value
-                          )
-                        : "Select language"}
+                      {field.value ? field.value : "Select language"}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
-                 
+                  </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
+                <PopoverContent side="bottom" className="w-[400px] max-h-40 overflow-y-auto p-0 shadow-lg">
                   <Command>
-                    <CommandInput placeholder="Search framework..." />
-                    <CommandEmpty>No framework found.</CommandEmpty>
+                    <CommandInput placeholder="Izberi mesto..." />
+                    <CommandEmpty>Mesto ne obstaja</CommandEmpty>
                     <CommandGroup>
-                      {cities.map((language) => (
+                      {cities.map((mesto) => (
                         <CommandItem
-                          value={language}
-                          key={language}
-                          onSelect={(currentValue) => {
-                            setValue(currentValue === value ? "" : currentValue)
-                            setOpen(false)
+                          value={mesto}
+                          key={mesto}
+                          onSelect={(value) => {
+                            form.setValue("mesto", mesto);
+                            setIsOpen(false);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              language === value
+                              mesto === field.value
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
                           />
-                          {language}
+                          {mesto}
                         </CommandItem>
                       ))}
                     </CommandGroup>
                   </Command>
                 </PopoverContent>
               </Popover>
+           
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+       
+      </form>
+    </Form>
+    <div className="grid w-full max-w-sm items-center gap-1.5">
+      <Label htmlFor="picture">Avatar</Label>
+      <Input id="picture" type="file" />
+    </div>
+    
     </CardContent>
     <CardFooter>
-      <p>Card Footer</p>
+    <Button
+            type="submit"
+           
+            disabled={isLoading1}
+          >
+            {isLoading1 && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            <span>Shrani</span>
+          </Button>
     </CardFooter>
   </Card>
+ 
+   
 </>  
 
 )
