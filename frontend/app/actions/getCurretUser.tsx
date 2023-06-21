@@ -17,6 +17,7 @@ export default async function getCurrentUser() {
     const user = getUser(session.user.id);
     
     
+    
     return user;
     
   } catch (error: any) {

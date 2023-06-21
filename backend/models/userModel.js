@@ -4,7 +4,28 @@ import bcrypt from 'bcrypt';
 
 const User = sequelize.define(
   "User",
-  {
+  { 
+    ime:{
+      type: DataTypes.STRING,
+      allowNull: true,
+
+    },
+    priimek:{
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    mesto:{
+    type: DataTypes.STRING,
+      allowNull: true,
+      
+
+  },
+  avatar:{
+    type: DataTypes.STRING,
+      allowNull: true,
+      
+
+  },
     userName: {
       type: DataTypes.STRING,
       allowNull: false,
