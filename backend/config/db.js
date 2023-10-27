@@ -5,8 +5,12 @@ const sequelize = new Sequelize(process.env.POSTGRES_URI);
 
 const connectDB = async () => {
   try {
+    
     console.log(process.env.POSTGRES_URI);
     await sequelize.authenticate();
+    await sequelize.sync(); 
+   
+   // This will synchronize all your defined models with the database.
     console.log('Connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);

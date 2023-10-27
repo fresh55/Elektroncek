@@ -2,13 +2,16 @@ import {
     AlertTriangle,
     ArrowRight,
     Check,
+    Copy,
     ChevronLeft,
     ChevronRight,
     Command,
     CreditCard,
     File,
     FileText,
+    FileEdit,
     HelpCircle,
+    Home,
     Image,
     Laptop,
     Loader2,
@@ -16,8 +19,10 @@ import {
     Moon,
     MoreVertical,
     Pizza,
+    Pencil,
     Plus,
     Settings,
+    Share,
     SunMedium,
     Trash,
     Twitter,
@@ -31,7 +36,9 @@ import {
   export const Icons = {
    
     logo: Command,
+    copy: Copy,
     close: X,
+    home: Home,
     spinner: Loader2,
     chevronLeft: ChevronLeft,
     chevronRight: ChevronRight,
@@ -49,8 +56,11 @@ import {
     help: HelpCircle,
     pizza: Pizza,
     sun: SunMedium,
+    
+    share: Share,
     moon: Moon,
     laptop: Laptop,
+    edit: Pencil,
     gitHub: ({ ...props }: LucideProps) => (
       <svg
         aria-hidden="true"

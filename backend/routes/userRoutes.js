@@ -6,7 +6,8 @@ import {
     registerUser,
     logoutUser,
     getUserProfile,
-    updateUserProfile,} from '../controllers/userController.js';
+    updateUserProfile,
+    deleteUser} from '../controllers/userController.js';
 import {protect} from '../middleware/authMiddleware.js'
 
 router.post('/', registerUser);
@@ -15,6 +16,7 @@ router.post('/logout', logoutUser);
 router
   .route('/profile')
   .get(getUserProfile)
-  .put( updateUserProfile);
+  .put( updateUserProfile)
+  .delete(deleteUser);
 
 export default router;

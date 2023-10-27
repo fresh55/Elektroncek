@@ -6,7 +6,9 @@ import cookieParser from 'cookie-parser'
 const port = process.env.PORT || 5000;
 import userRoutes from './routes/userRoutes.js';
 import otherRoutes from './routes/otherRoutes.js';
+import productRoutes from './routes/productRoutes.js'
 import {connectDB} from './config/db.js';
+import Produkt from './models/productModel.js';
 import cors from 'cors'
 connectDB();
 
@@ -22,11 +24,13 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use('/api/users', userRoutes)
 app.use('/api/other', otherRoutes)
+app.use('/api/product', productRoutes)
 app.get('/', (req, res) => res.send('server is ready'))
+
+
 
 app.use(notFound);
 app.use(errorHandler);
 app.set("trust proxy", 1);
-console.log(process.env.NODE_ENV);
 
 app.listen(port, () => console.log('listening on port ' + port));

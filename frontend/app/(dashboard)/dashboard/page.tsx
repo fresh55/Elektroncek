@@ -5,15 +5,16 @@ import  getCurrentUser  from "@/app/actions/getCurretUser"
 import { DashboardHeader } from "@/components/DashboardHeader"
 import { DashboardShell } from "@/components/Shell"
 import  UpdateUserForm  from "@/components/UpdateUserForm"
-
+import Navigation from "./components/Navigation"
 export const metadata = {
   title: "Nastavitve",
   description: "Manage account and website settings.",
 }
 
+
+
 export default async function SettingsPage() {
   const user = await getCurrentUser()
-  
   if (!user) {
     redirect("/login")
   }
@@ -21,12 +22,14 @@ export default async function SettingsPage() {
   return (
     <DashboardShell>
       <DashboardHeader
-        heading="Nastavitve"
+        heading="Nadzorna plošča"
         text="Upravljajte z nastavitvami vašega profila"
+        button={false}
+        
       />
-      <div className="grid gap-10">
+      
         <UpdateUserForm user={{ id: user.id, email: user.email }} />
-      </div>
+      
     </DashboardShell>
   )
 }

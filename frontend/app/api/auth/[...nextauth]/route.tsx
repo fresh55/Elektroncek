@@ -4,6 +4,7 @@ import { authUser } from "@/lib/auth";
 
 
 export const authOptions: NextAuthOptions = {
+  
   secret: process.env.NEXTAUTH_SECRET, 
 
   session: {
@@ -22,22 +23,25 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials: any) {
+      
         const authResponse = await authUser(
           credentials.email,
           credentials.password
         );
 
-        if(!authResponse){
-         
-          return null;
-        }
-
+       
+        if(authResponse){
         
-        return {
-          id: authResponse._id,
-          email: authResponse.email,
-          username: authResponse.userName,
+          return Promise.resolve(authResponse);
+
+        }else {
+
+          // If the authentication fails, return null or throw an error
+          return Promise.resolve(null);
         }
+         
+        
+       
       },
     }),
 

@@ -1,5 +1,5 @@
 import HeaderIcon from "./HeaderIcon"
-import NewProductButton from "./NewProductButton";
+import NewProductButton from "../NewProductButton";
 import { BiBell } from 'react-icons/bi';
 import UserMenu from "./UserMenu";
 import getCurrentUser from "../../app/actions/getCurretUser"

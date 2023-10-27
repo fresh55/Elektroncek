@@ -41,6 +41,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUpload from "./ImageUpload";
 import SelectMesto from "./SelectMesto";
 
+
 // schema for form
 const formSchema = z.object({
   username: z.string(),
@@ -87,13 +88,13 @@ const UpdateUserForm = (user: any) => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Card>
+        <Card className="m-5">
           <CardHeader>
             <CardTitle className="">Prijavni podatki</CardTitle>
             <CardDescription>Spremenite svoje prijavne podatke</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-2 mb-3">
+            <div className="">
               <Label htmlFor="email">Elektronski naslov</Label>
               <Input
                 placeholder={`${user.user.email}`}

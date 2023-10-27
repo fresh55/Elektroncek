@@ -1,4 +1,5 @@
-import {Nunito} from "next/font/google";
+import { Inter as FontSans } from "next/font/google"
+import localFont from "next/font/local"
 import './globals.css'
 
 
@@ -7,8 +8,10 @@ export const metadata = {
   title: 'Elektroncek',
   description: 'Platforma',
 }
-const font =  Nunito({
-  subsets: ["latin"]
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
 })
 
 export default function RootLayout({
@@ -16,8 +19,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
        
       <body >
         

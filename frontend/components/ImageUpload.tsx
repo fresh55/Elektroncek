@@ -58,8 +58,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onChange, value }) => {
     text-neutral-600
     hover:opacity-90 
     shadow-xl
-    w-24
-    h-24
+    w-36
+    h-36
    
     "
     >

@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button"
 import {ChevronLeft} from "lucide-react"
 import Logo from "@/components/Logo"
 import LoginForm from "@/components/LoginForm"
-
+import { cn } from "@/lib/utils"
 export const metadata: Metadata = {
   title: "Login",
   description: "Login to your account",
@@ -15,11 +15,14 @@ export default function LoginPage() {
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
       <Link
         href="/"
-        className="absolute left-4 top-4 md:left-8 md:top-8"
+        className={cn(
+          buttonVariants({ variant: "ghost" }),
+          "absolute left-4 top-4 md:left-8 md:top-8"
+        )}
       >
         <>
           <ChevronLeft className="mr-2 h-4 w-4" />
-          Back
+          Vrni se
         </>
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -27,16 +30,16 @@ export default function LoginPage() {
         <div className="flex items-center justify-center mb-3">
             <Link
             href="/"
-            className="flex h-9 items-center gap-2 rounded-xl px-2"
+            className="flex h-9 items-center gap-2 rounded-xl px-2 mb-3"
     >
-      <Logo  />
+      <Logo size={70}/>
     </Link>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Pozdravljeni nazaj
+          <h1 className="text-5xl font-semibold tracking-tight">
+            Pozdravljeni,
           </h1>
           <p className="text-sm text-muted-foreground">
-            Enter your email to sign in to your account
+            Vnesite svoj elektronski naslov in geslo
           </p>
         </div>
         <LoginForm/>
@@ -45,7 +48,7 @@ export default function LoginPage() {
             href="/register"
             className="hover:text-brand underline underline-offset-4"
           >
-            Don&apos;t have an account? Sign Up
+            Ali še nimate svojega računa?
           </Link>
         </p>
       </div>
