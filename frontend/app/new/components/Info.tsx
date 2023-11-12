@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useStep } from "../StepContext";
 import {
@@ -9,27 +9,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller  } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {Sparkles,Laugh,Hourglass, AlertTriangle} from "lucide-react"
-import clsx from 'clsx';
+import { Sparkles, Laugh, Hourglass, AlertTriangle } from "lucide-react";
+import clsx from "clsx";
 
 const formSchema = z.object({
-  ime: z.string().nonempty().max(5),
+  ime: z.string().min(1, "Naslov produkta je obvezen ! "),
   status: z.enum(["novo", "kot novo", "rabljeno", "poškodovano"]),
   cena: z.string(),
 });
 
 export const SomeComponent = () => {
-  const { items, currentStep, goNext, goPrev, setCurrentStep } = useStep();
+  const { items, currentStep, goNext, goPrev, setCurrentStep, isCurrentStepValid, setCurrentStepValid } = useStep();
   const [isInputEmpty, setIsInputEmpty] = useState(true);
-  const [formattedValue, setFormattedValue] = useState('');
+  const [formattedValue, setFormattedValue] = useState("");
+  const [selectedOption, setSelectedOption] = useState('');
   const {
     handleSubmit,
     register,
@@ -45,9 +55,11 @@ export const SomeComponent = () => {
       cena: undefined,
     },
   });
-  function onSubmit({ ime, status,cena }: z.infer<typeof formSchema>) {
+  function onSubmit({ ime, status, cena }: z.infer<typeof formSchema>) {
     console.log(errors.cena);
     console.log(ime, status, cena);
+    setCurrentStepValid(true);
+    goNext();
     try {
     } catch (error) {
       console.error("Failed to update user:", error);
@@ -57,39 +69,17 @@ export const SomeComponent = () => {
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setIsInputEmpty(event.target.value === '');
-    let value = event.target.value;
-    value = value.replace(/[^0-9.,]/g, '');  // Remove non-numeric and non-delimiter characters
-    value = value.replace(/,/g, '.');  // Ensure we only have a dot as a decimal separator for parsing
-    let [whole = '', fraction = ''] = value.split('.');
-    fraction = fraction.slice(0, 2);  // Limit decimal to 2 places
+    setIsInputEmpty(event.target.value === "");
+    setFormattedValue(event.target.value);
+  }
 
-    // Remove leading zeros from the whole number part
-    while (whole.length > 1 && whole.startsWith('0')) {
-        whole = whole.slice(1);
-    }
-
-    // Format whole number part with thousand separators
-    whole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-    // Ensure the whole number part is no longer than 7 digits
-    let digitCount = whole.replace(/,/g, '').length;
-    if (digitCount > 7) {
-        whole = whole.slice(0, -1);  // Remove the last character
-        digitCount--;
-    }
-
-    const formattedValue = `${whole}${fraction ? '.' + fraction : ''}`;
-    setFormattedValue(formattedValue);
-
-    // Remove trailing zeros from the formatted value but only if there's a decimal point
-    if (formattedValue.includes('.')) {
-        setFormattedValue(formattedValue.replace(/\.?0+$/, ''));
-    }
-}
   useEffect(() => {
-    setValue('cena', formattedValue);  // Assuming setValue is from useForm()
-}, [formattedValue, setValue]);
+    if (isInputEmpty) {
+      setValue("cena", ""); // Clear the value if the input is empty
+    }
+  }, [isInputEmpty, setValue]);
+
+  const isInputDisabled = selectedOption === 'banana' || selectedOption === 'blueberry';
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 pb-32 pt-8">
       <Card>
@@ -112,11 +102,11 @@ export const SomeComponent = () => {
                 {...register("ime")}
               />
               {errors.ime && (
-                <span className="text-red-500 text-xs">
+                <span className="text-red-500 text-xs mt-2 block">
                   {errors.ime.message}
                 </span>
               )}
-              <span className="text-xs opacity-70 text-zinc-900 mt-2">
+              <span className="text-xs opacity-70 text-zinc-900 mt-2 block">
                 Pomenljiv naslov pomaga iskalcem hitreje najti vaš oglas in
                 poveča vaše možnosti za prodajo.
               </span>
@@ -124,100 +114,132 @@ export const SomeComponent = () => {
             <div className="mb-2">
               <Label htmlFor="status">Stanje</Label>
               <Controller
-            name="status"
-            control={control} // from useForm()
-            render={({ field }) => (
-              <RadioGroup   
-              //@ts-ignore 
-              onValueChange={field.onChange}
-              className="grid grid-cols-4 gap-4">
-                   <div>
-                   <RadioGroupItem
-                    value="novo"
-                    id="novo"
-                    className="peer sr-only"
-                  
-                  />
-                  <Label
-                    htmlFor="novo"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:bg-zinc-900 peer-data-[state=checked]:text-white [&:has([data-state=checked])]:bg-zinc-900"
+                name="status"
+                control={control} // from useForm()
+                render={({ field }) => (
+                  <RadioGroup
+                    //@ts-ignore
+                    onValueChange={field.onChange}
+                    className="grid grid-cols-4 gap-4"
                   >
-                    <Sparkles className="mb-1"/>
-                    Novo
-                  </Label>
-                </div>
-                <div>
-                  <RadioGroupItem
-                    value="kot novo"
-                    id="kot novo"
-                    className="peer sr-only"
-                    
-                  />
-                  <Label
-                    htmlFor="kot novo"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:bg-zinc-900 peer-data-[state=checked]:text-white [&:has([data-state=checked])]:border-primary"
-                  >
-                    <Laugh className="mb-1 "/>
-                    Kot novo
-                  </Label>
-                </div>
-                <div>
-                  <RadioGroupItem
-                    value="rabljeno"
-                    id="rabljeno"
-                    className="peer sr-only"
-                  
-                  />
-                  <Label
-                    htmlFor="rabljeno"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:bg-zinc-900 peer-data-[state=checked]:text-white [&:has([data-state=checked])]:border-primary"
-                  >
-                    <Hourglass className="mb-1" />
-                    Rabljeno
-                  </Label>
-                </div>
-                <div>
-                  <RadioGroupItem
-                    value="poškodovano"
-                    id="poškodovano"
-                    className="peer sr-only"
-                  
-                  />
-                  <Label
-                    htmlFor="poškodovano"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:bg-zinc-900 peer-data-[state=checked]:text-white [&:has([data-state=checked])]:border-primary"
-                  >
-                    <AlertTriangle className="mb-1" />
-                    Poškodovano
-                  </Label>
-                </div>
-              </RadioGroup>
-            )}/>
-             <span className="text-xs opacity-70 text-zinc-900 mt-2">
-             Čim bolj natančno opišite stanje artikla, ki ga ponujate, in vse pomembne podrobnosti pokažite na slikah artikla. To vam prihrani čas pri povpraševanju in poveča vaše prodajne možnosti.
+                    <div>
+                      <RadioGroupItem
+                        value="novo"
+                        id="novo"
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor="novo"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:bg-gradient-to-r from-cyan-500 to-blue-500  peer-data-[state=checked]:text-white [&:has([data-state=checked])]:bg-zinc-900"
+                      >
+                        <Sparkles className="mb-1" />
+                        Novo
+                      </Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem
+                        value="kot novo"
+                        id="kot novo"
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor="kot novo"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:bg-gradient-to-r from-cyan-500 to-blue-500 peer-data-[state=checked]:text-white [&:has([data-state=checked])]:border-primary"
+                      >
+                        <Laugh className="mb-1 " />
+                        Kot novo
+                      </Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem
+                        value="rabljeno"
+                        id="rabljeno"
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor="rabljeno"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:bg-gradient-to-r from-cyan-500 to-blue-500 peer-data-[state=checked]:text-white [&:has([data-state=checked])]:border-primary"
+                      >
+                        <Hourglass className="mb-1" />
+                        Rabljeno
+                      </Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem
+                        value="poškodovano"
+                        id="poškodovano"
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor="poškodovano"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:bg-gradient-to-r from-cyan-500 to-blue-500 peer-data-[state=checked]:text-white [&:has([data-state=checked])]:border-primary"
+                      >
+                        <AlertTriangle className="mb-1" />
+                        Poškodovano
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                )}
+              />
+              <span className="text-xs opacity-70 text-zinc-900 mt-2">
+                Čim bolj natančno opišite stanje artikla, ki ga ponujate, in vse
+                pomembne podrobnosti pokažite na slikah artikla. To vam prihrani
+                čas pri povpraševanju in poveča vaše prodajne možnosti.
               </span>
             </div>
+            
             <div className="grid grid-cols-2 gap-4">
-    <div>
-        <Label htmlFor="cena">Cena</Label>
-        <div className="relative flex items-center">
-        {!isInputEmpty && (<span className="absolute ml-3 text-sm text-zinc-900">€</span>)}
-            <Input
-                 className={clsx({'pl-6': !isInputEmpty})}
-                placeholder={isInputEmpty ? "€ 0.00" : ""}
-                id="cena"
-                value={formattedValue}
-                {...register("cena", {
-                    onChange: handleChange
-                })}
-            />
-        </div>
-    </div>
-</div>
+              <div>
+              <Label htmlFor="cena">Cena</Label>
+                <div className="relative flex items-center">
+                  {!isInputEmpty && (
+                    <span className={clsx("absolute ml-3 text-sm text-zinc-900", { 'opacity-50': isInputDisabled })}>
+                      €
+                    </span>
+                  )}
+                  <Input
+                    disabled={isInputDisabled}
+                     className={clsx(
+        // This class is always applied
+        { 'opacity-50': isInputDisabled }, // Conditionally applied based on isInputDisabled
+        !isInputEmpty ? "pl-6" : '', // Conditionally apply another class based on isInputEmpty
+        // ... you can add more conditions or static classes here
+      )}
+                    placeholder={isInputEmpty ? "€ 0.00" : ""}
+                    id="cena"
+                    value={formattedValue}
+                    {...register("cena", {
+                      onChange: handleChange,
+                    })}
+                  />
+                </div>
+              </div>
+              <div>
+              <Label htmlFor="cena">Izberi vrsto ponudbe</Label>
+              <div className="w-1/2">
+                <Select defaultValue="apple" onValueChange={setSelectedOption}>
+                  <SelectTrigger >
+                    <SelectValue  placeholder="Izberi vrsto" />
+                  </SelectTrigger>
+                  <SelectContent >
+                    <SelectGroup>
+                      <SelectItem value="apple">Prodam</SelectItem>
+                      <SelectItem value="banana">Podarim</SelectItem>
+                      <SelectItem value="blueberry">
+                        Cena po dogovoru
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                </div>
+              </div>
+            </div>
           </CardContent>
-          <Button className="" type="submit">
-            Button
-          </Button>
+          <div className="flex justify-end">
+    <Button className="mb-4 mr-4" type="submit">
+        Shrani Podatke in nadaljujte na naslednji korak
+    </Button>
+</div>
         </form>
       </Card>
       <div className="flex"></div>

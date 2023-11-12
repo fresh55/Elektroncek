@@ -43,6 +43,8 @@ interface StepContextType {
   items : SidebarItem[];
   currentStep: SidebarItem;
   setCurrentStep: React.Dispatch<React.SetStateAction<SidebarItem>>;
+  isCurrentStepValid: boolean; // New state for tracking validity
+  setCurrentStepValid: React.Dispatch<React.SetStateAction<boolean>>; // Function to update validity
   goNext : () => void;
    goPrev : () => void
 
@@ -60,13 +62,17 @@ export const useStep = () => {
 
 export const StepProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentStep, setCurrentStep] = useState<SidebarItem>(items[0]);
+  const [isCurrentStepValid, setCurrentStepValid] = useState(false); // New state for form validity
   console.log("Current Step: ", currentStep);
   console.log("Items: ", items);
   const goNext = () => {
-    console.log("uspelo je");
-    let nextIndex = currentStep.index + 1;
-    if (nextIndex <= items.length) {
-      setCurrentStep(items[nextIndex - 1]);
+    if (isCurrentStepValid) { // Check if current step is valid before proceeding
+      let nextIndex = currentStep.index + 1;
+      if (nextIndex <= items.length) {
+        setCurrentStep(items[nextIndex - 1]);
+      }
+    } else {
+      console.log("Complete all required fields before proceeding");
     }
   };
 
@@ -77,7 +83,7 @@ export const StepProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
   return (
-    <StepContext.Provider value={{items, currentStep, setCurrentStep, goNext, goPrev }}>
+    <StepContext.Provider value={{items, currentStep, setCurrentStep,isCurrentStepValid, setCurrentStepValid, goNext, goPrev }}>
       {children}
     </StepContext.Provider>
   );
