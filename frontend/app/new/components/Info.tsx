@@ -55,18 +55,25 @@ export const SomeComponent = () => {
       cena: undefined,
     },
   });
-  function onSubmit({ ime, status, cena }: z.infer<typeof formSchema>) {
+ function onSubmit({ ime, status, cena }: z.infer<typeof formSchema>) {
     console.log(errors.cena);
     console.log(ime, status, cena);
-    setCurrentStepValid(true);
-    goNext();
     try {
+      
+    setCurrentStepValid(true);
+    
     } catch (error) {
       console.error("Failed to update user:", error);
       // Show error message to the user
     } finally {
     }
   }
+
+  useEffect(() => {
+    if (isCurrentStepValid) {
+      goNext();
+    }
+  }, [isCurrentStepValid, goNext]);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setIsInputEmpty(event.target.value === "");
@@ -93,7 +100,7 @@ export const SomeComponent = () => {
         <Separator className="mb-8" />
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent>
-            <div className="mb-2">
+            <div className="mb-8">
               <Label htmlFor="ime">Naslov</Label>
               <Input
                 className={errors.ime ? "border-red-500" : ""}
@@ -111,7 +118,7 @@ export const SomeComponent = () => {
                 poveča vaše možnosti za prodajo.
               </span>
             </div>
-            <div className="mb-2">
+            <div className="mb-8">
               <Label htmlFor="status">Stanje</Label>
               <Controller
                 name="status"
@@ -188,7 +195,7 @@ export const SomeComponent = () => {
               </span>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
               <Label htmlFor="cena">Cena</Label>
                 <div className="relative flex items-center">
